@@ -92,7 +92,6 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
 
         # added depth regularization
         if depth_regularization:
-            print("depth included")
             norm_rendered_depth = (rendered_depth-rendered_depth.min())/(rendered_depth.max()-rendered_depth.min())
             depth_image = viewpoint_cam.depth_image.cuda()
             Ll1_depth = l1_loss(norm_rendered_depth, depth_image)
