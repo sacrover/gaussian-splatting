@@ -26,7 +26,10 @@ class GaussianModel:
     def setup_functions(self):
         def build_covariance_from_scaling_rotation(scaling, scaling_modifier, rotation):
             L = build_scaling_rotation(scaling_modifier * scaling, rotation)
+            # make a symmetric cov matrix
             actual_covariance = L @ L.transpose(1, 2)
+
+            # get lower diag
             symm = strip_symmetric(actual_covariance)
             return symm
         
@@ -42,11 +45,13 @@ class GaussianModel:
 
 
     def __init__(self, sh_degree : int):
+        # '_' params are trainable
+        
         self.active_sh_degree = 0
-        self.max_sh_degree = sh_degree  
+        self.max_sh_degree = sh_degree  # tweak
         self._xyz = torch.empty(0)
-        self._features_dc = torch.empty(0)
-        self._features_rest = torch.empty(0)
+        self._features_dc = torch.empty(0) # ???
+        self._features_rest = torch.empty(0) # ???
         self._scaling = torch.empty(0)
         self._rotation = torch.empty(0)
         self._opacity = torch.empty(0)
@@ -59,6 +64,9 @@ class GaussianModel:
         self.setup_functions()
 
     def capture(self):
+        """
+        Captures all the class instance variables
+        """
         return (
             self.active_sh_degree,
             self._xyz,
@@ -75,6 +83,9 @@ class GaussianModel:
         )
     
     def restore(self, model_args, training_args):
+        """
+        restore training variables and weights ???
+        """
         (self.active_sh_degree, 
         self._xyz, 
         self._features_dc, 
@@ -118,6 +129,9 @@ class GaussianModel:
         return self.covariance_activation(self.get_scaling, scaling_modifier, self._rotation)
 
     def oneupSHdegree(self):
+        """
+        increases the spherical harmonics degree by one
+        """
         if self.active_sh_degree < self.max_sh_degree:
             self.active_sh_degree += 1
 
