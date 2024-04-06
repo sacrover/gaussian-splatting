@@ -7,3 +7,6 @@
 [submodule "SIBR_viewers"]
 	path = SIBR_viewers
 	url = https://gitlab.inria.fr/sibr/sibr_core.git
+[submodule "submodules/diff-gaussian-rasterization-depth-acc"]
+	path = submodules/diff-gaussian-rasterization-depth-acc
+	url = https://github.com/robot0321/diff-gaussian-rasterization-depth-acc.git

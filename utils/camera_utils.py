@@ -9,7 +9,7 @@
 # For inquiries contact  george.drettakis@inria.fr
 #
 
-from scene.cameras import Camera
+from scene.cameras import Camera, NovelCamera
 import numpy as np
 from utils.general_utils import PILtoTorch
 from utils.graphics_utils import fov2focal
@@ -43,19 +43,35 @@ def loadCam(args, id, cam_info, resolution_scale):
     gt_image = resized_image_rgb[:3, ...]
     loaded_mask = None
 
+    depth_image = None
+    if cam_info.depth_image is not None:
+        depth_image = PILtoTorch(cam_info.depth_image, resolution)
     if resized_image_rgb.shape[1] == 4:
         loaded_mask = resized_image_rgb[3:4, ...]
 
     return Camera(colmap_id=cam_info.uid, R=cam_info.R, T=cam_info.T, 
                   FoVx=cam_info.FovX, FoVy=cam_info.FovY, 
                   image=gt_image, gt_alpha_mask=loaded_mask,
-                  image_name=cam_info.image_name, uid=id, data_device=args.data_device)
+                  image_name=cam_info.image_name, uid=id, depth_image=depth_image, data_device=args.data_device)
+
+def loadNovelCam(args, id, cam_info):
+    return NovelCamera(colmap_id=cam_info.uid, R=cam_info.R, T=cam_info.T, 
+                  FoVx=cam_info.FovX, FoVy=cam_info.FovY, image_height=cam_info.height,
+                 image_width=cam_info.width, uid=id, data_device=args.data_device)
 
 def cameraList_from_camInfos(cam_infos, resolution_scale, args):
     camera_list = []
 
     for id, c in enumerate(cam_infos):
         camera_list.append(loadCam(args, id, c, resolution_scale))
+
+    return camera_list
+
+def cameraList_from_novelCamInfos(cam_infos, resolution_scale, args):
+    camera_list = []
+
+    for id, c in enumerate(cam_infos):
+        camera_list.append(loadNovelCam(args, id, c))
 
     return camera_list
 
